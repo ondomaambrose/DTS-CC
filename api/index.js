@@ -1,31 +1,30 @@
-// server.js
+// api/index.js
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const serverless = require('serverless-http'); // Wraps Express for Serverless
 
 const app = express();
 app.use(cors());
 app.use(express.json()); 
 
-// Configure your MySQL Instance connection
-const db = mysql.createConnection({
+// 1. CONFIGURE A LIVE DATABASE CONNECTION POOL FOR SERVERLESS
+const pool = mysql.createPool({
     host:     process.env.DB_HOST     || '127.0.0.1',
     user:     process.env.DB_USER     || 'root',       
     password: process.env.DB_PASSWORD || '#Spongebob444', 
     database: process.env.DB_NAME     || 'CoutureClassics',
-    port:     process.env.DB_PORT     || 3306
+    port:     process.env.DB_PORT     || 3306,
+    waitForConnections: true,
+    connectionLimit: 5, // Kept light to prevent crashing free cloud database limits
+    queueLimit: 0
 });
 
-db.connect((err) => {
-    if (err) {
-        console.error('Error connecting to MySQL Instance:', err.message);
-        return;
-    }
-    console.log('Connected smoothly to CoutureClassics MySQL database.');
-});
+// Use native promises directly from the pool object
+const db = pool.promise();
 
-// 1. SIGN-UP / REGISTRATION ROUTE
+// 2. SIGN-UP / REGISTRATION ROUTE
 app.post('/api/signup', async (req, res) => {
     const { firstName, lastName, phone, email, password } = req.body;
 
@@ -34,7 +33,7 @@ app.post('/api/signup', async (req, res) => {
     }
 
     try {
-        const [existing] = await db.promise().query('SELECT * FROM CUSTOMER WHERE Email = ?', [email]);
+        const [existing] = await db.query('SELECT * FROM CUSTOMER WHERE Email = ?', [email]);
         if (existing.length > 0) {
             return res.status(400).json({ error: 'Email already registered' });
         }
@@ -47,7 +46,7 @@ app.post('/api/signup', async (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?)
         `;
         
-        await db.promise().query(insertQuery, [customerId, firstName, lastName, phone, email, hashedPassword]);
+        await db.query(insertQuery, [customerId, firstName, lastName, phone, email, hashedPassword]);
         res.status(201).json({ message: 'Account successfully created!', customerId });
     } catch (err) {
         console.error(err);
@@ -55,7 +54,7 @@ app.post('/api/signup', async (req, res) => {
     }
 });
 
-// 2. SIGN-IN / AUTHENTICATION ROUTE
+// 3. SIGN-IN / AUTHENTICATION ROUTE
 app.post('/api/signin', async (req, res) => {
     const { email, password } = req.body;
 
@@ -64,7 +63,7 @@ app.post('/api/signin', async (req, res) => {
     }
 
     try {
-        const [users] = await db.promise().query('SELECT * FROM CUSTOMER WHERE Email = ?', [email]);
+        const [users] = await db.query('SELECT * FROM CUSTOMER WHERE Email = ?', [email]);
         if (users.length === 0) {
             return res.status(401).json({ error: 'Invalid authentication credentials' });
         }
@@ -89,21 +88,18 @@ app.post('/api/signin', async (req, res) => {
     }
 });
 
-// 3. LIVE INVENTORY SYNC ROUTE
+// 4. LIVE INVENTORY SYNC ROUTE
 app.get('/api/products', async (req, res) => {
     try {
-        // Query the database
-        const [rows] = await db.promise().query('SELECT * FROM product');
+        const [rows] = await db.query('SELECT * FROM product');
         
         if (rows.length > 0) {
-            // MAP the database columns to the keys your frontend expects
             const formattedProducts = rows.map(p => ({
                 id: p.Product_ID || p.id,
                 name: p.Name || p.name,
-                category: (p.Category || p.category || 'Women').toLowerCase(), // Ensure this matches 'women'/'men'
+                category: (p.Category || p.category || 'Women').toLowerCase(),
                 detail: p.Detail || p.detail || p.Description,
                 price: p.Price || p.price,
-                // Robust casing fallback chain prevents 'undefined' items from getting stripped
                 img: p.Img_Url || p.Img_URL || p.img_url || p.Img_url || "", 
                 badge: p.Badge || p.badge || null
             }));
@@ -118,7 +114,7 @@ app.get('/api/products', async (req, res) => {
     }
 });
 
-const PORT = 5000;
-app.listen(PORT, () => {
-    console.log(`Backend server running live on http://localhost:${PORT}`);
-});
+// 5. EXPORT FOR VERCEL
+// Serverless environments manage execution lifecycles automatically; app.listen() is removed.
+module.exports = app;
+module.exports.handler = serverless(app);
