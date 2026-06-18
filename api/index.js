@@ -6,10 +6,45 @@ const bcrypt = require('bcryptjs');
 const serverless = require('serverless-http'); // Wraps Express for Serverless
 
 const app = express();
-app.use(cors());
+
+// 1. ENHANCED SECURITY, CORS, & PRIVATE NETWORK ACCESS CONFIGURATION
+const allowedOrigins = ['https://dts-cc.vercel.app', 'http://localhost:3000', 'http://localhost:5000'];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS']
+}));
+
+// Specialized middleware patch to address Cross-Origin Local Loopback Restrictions
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.header("Access-Control-Allow-Origin", origin);
+    }
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    
+    // CRITICAL: Explicitly permits public internet deployments to tunnel down to local network boundaries
+    res.header("Access-Control-Allow-Private-Network", "true");
+
+    // Immediately capture and resolve preflight OPTIONS headers before routing engine engagement
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
+});
+
 app.use(express.json()); 
 
-// 1. CONFIGURE A LIVE DATABASE CONNECTION POOL FOR SERVERLESS
+// 2. CONFIGURE A LIVE DATABASE CONNECTION POOL FOR SERVERLESS
 const pool = mysql.createPool({
     host:     process.env.DB_HOST     || '127.0.0.1',
     user:     process.env.DB_USER     || 'root',       
@@ -24,7 +59,7 @@ const pool = mysql.createPool({
 // Use native promises directly from the pool object
 const db = pool.promise();
 
-// 2. SIGN-UP / REGISTRATION ROUTE
+// 3. SIGN-UP / REGISTRATION ROUTE
 app.post('/api/signup', async (req, res) => {
     const { firstName, lastName, phone, email, password } = req.body;
 
@@ -54,7 +89,7 @@ app.post('/api/signup', async (req, res) => {
     }
 });
 
-// 3. SIGN-IN / AUTHENTICATION ROUTE
+// 4. SIGN-IN / AUTHENTICATION ROUTE
 app.post('/api/signin', async (req, res) => {
     const { email, password } = req.body;
 
@@ -88,7 +123,7 @@ app.post('/api/signin', async (req, res) => {
     }
 });
 
-// 4. LIVE INVENTORY SYNC ROUTE
+// 5. LIVE INVENTORY SYNC ROUTE
 app.get('/api/products', async (req, res) => {
     try {
         const [rows] = await db.query('SELECT * FROM product');
@@ -114,7 +149,7 @@ app.get('/api/products', async (req, res) => {
     }
 });
 
-// 5. EXPORT FOR VERCEL
+// 6. EXPORT FOR VERCEL
 // Serverless environments manage execution lifecycles automatically; app.listen() is removed.
 module.exports = app;
 module.exports.handler = serverless(app);
