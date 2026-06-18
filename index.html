@@ -54,6 +54,7 @@
             top: 0;
             z-index: 100;
             backdrop-filter: blur(12px);
+            opacity: 0; /* Animated by GSAP on load */
         }
 
         .nav-container {
@@ -95,10 +96,8 @@
 
         /* --- HERO SECTION --- */
         .hero {
+            position: relative;
             height: 100vh;
-            /* Gradient fades smoothly into your --black background */
-            background: linear-gradient(to bottom, rgba(8, 8, 8, 0.3), var(--black)), 
-                        url('https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=1600&q=80') center/cover no-repeat;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -108,12 +107,41 @@
             margin-top: 0;
         }
 
+        /* Container layer for the background to enable smooth crossfading */
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Starts with your first dynamic image combined with the ambient fade gradient */
+            background: linear-gradient(to bottom, rgba(8, 8, 8, 0.3), var(--black)), 
+                        url('https://images.unsplash.com/photo-1696962678565-bee84e6b9cb6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bmlnZXJpYW4lMjBmYXNoaW9ufGVufDB8fDB8fHww') center/cover no-repeat;
+            z-index: 1;
+            will-change: opacity;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mask container for sleek text reveal typography */
+        .title-mask {
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
         .hero h1 {
             font-size: 4.5rem;
-            margin-bottom: 16px;
             letter-spacing: 0.05em;
             color: var(--white);
             max-width: 900px;
+            transform: translateY(100px); /* Animated by GSAP on load */
         }
 
         .hero p {
@@ -122,6 +150,8 @@
             max-width: 600px;
             color: rgba(248, 244, 239, 0.7);
             line-height: 1.6;
+            opacity: 0; /* Animated by GSAP on load */
+            transform: translateY(20px);
         }
 
         .btn-primary {
@@ -133,7 +163,9 @@
             letter-spacing: 0.15em;
             font-weight: 600;
             border: 1px solid var(--gold);
-            transition: all 0.3s ease;
+            transition: background-color 0.3s, color 0.3s;
+            opacity: 0; /* Animated by GSAP on load */
+            transform: translateY(20px);
         }
 
         .btn-primary:hover {
@@ -153,6 +185,8 @@
             font-size: 2.8rem;
             margin-bottom: 48px;
             letter-spacing: 0.08em;
+            opacity: 0; /* Animated by GSAP on scroll */
+            transform: translateY(30px);
         }
 
         .grid {
@@ -168,6 +202,8 @@
             height: 450px;
             overflow: hidden;
             transition: border-color 0.4s;
+            opacity: 0; /* Animated by GSAP on scroll */
+            transform: translateY(50px);
         }
 
         .card:hover {
@@ -183,7 +219,7 @@
         }
 
         .card:hover img {
-            transform: scale(1.03);
+            transform: scale(1.05);
             opacity: 1;
         }
 
@@ -258,7 +294,7 @@
 </head>
 <body>
 
-    <header>
+    <header id="main-header">
         <div class="nav-container">
             <a href="index.html" class="logo">Couture Classics</a>
             <div class="nav-actions">
@@ -270,30 +306,37 @@
     </header>
 
     <section class="hero">
-        <h1>Authentic African Elegance</h1>
-        <p>Discover our meticulously curated collection of premium Ankara, Dashiki, and Kente designs. Tailored for the modern trailblazer.</p>
-        <a href="shipping.html" class="btn-primary">Explore the Collection</a>
+        <!-- New visual hook for background rotation -->
+        <div class="hero-bg" id="hero-bg-layer"></div>
+        
+        <div class="hero-content">
+            <div class="title-mask">
+                <h1 id="hero-title">Authentic African Elegance</h1>
+            </div>
+            <p id="hero-desc">Discover our meticulously curated collection of premium Ankara, Dashiki, and Kente designs. Tailored for the modern trailblazer.</p>
+            <a href="shipping.html" id="hero-btn" class="btn-primary">Explore the Collection</a>
+        </div>
     </section>
 
     <section class="collections">
-        <h2>Curated For You</h2>
+        <h2 id="collections-title">Curated For You</h2>
         <div class="grid">
-            <a href="shipping.html" class="card">
-                <img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&q=80" alt="Women's Ankara">
+            <a href="shipping.html" class="card collection-card">
+                <img src="https://plus.unsplash.com/premium_photo-1692873056349-03ac690e4d9a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8bmlnZXJpYW4lMjBmYXNoaW9ufGVufDB8fDB8fHww" alt="Women's Ankara">
                 <div class="card-overlay">
                     <h3>Femme</h3>
                     <p>Bold prints & flowing silhouettes</p>
                 </div>
             </a>
-            <a href="shipping.html" class="card">
-                <img src="https://images.unsplash.com/photo-1621335829175-95f437384d7c?w=600&q=80" alt="Men's Agbada">
+            <a href="shipping.html" class="card collection-card">
+                <img src="https://media.istockphoto.com/id/929265542/photo/happiness-african-man-in-traditional-clothes-toothy-smile.webp?a=1&b=1&s=612x612&w=0&k=20&c=wY5AHGxIdapUH4HJeo0v83tx6ZTsWCaKvXKhsM9nt_M=" alt="Men's Agbada">
                 <div class="card-overlay">
                     <h3>Homme</h3>
                     <p>Sharp tailoring & ceremonial classics</p>
                 </div>
             </a>
-            <a href="shipping.html" class="card">
-                <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80" alt="Modern Fusion">
+            <a href="shipping.html" class="card collection-card">
+                <img src="https://images.unsplash.com/photo-1643014335869-f137032c2d9a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fG5pZ2VyaWFuJTIwZmFzaGlvbnxlbnwwfHwwfHx8MA%3D%3D" alt="Modern Fusion">
                 <div class="card-overlay">
                     <h3>New Arrivals</h3>
                     <p>Streetwear meets heritage</p>
@@ -315,5 +358,111 @@
         </div>
     </footer>
 
+    <!-- --- GSAP CORE ANIMATION ENGINE & SCROLLTRIGGER --- -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // --- HERO ROTATING BACKGROUND ENGINE ---
+            const bgLayer = document.getElementById("hero-bg-layer");
+            const backgroundImages = [
+                "https://images.unsplash.com/photo-1696962678565-bee84e6b9cb6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bmlnZXJpYW4lMjBmYXNoaW9ufGVufDB8fDB8fHww",
+                "https://plus.unsplash.com/premium_photo-1718275465076-6947afe3c57a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8bmlnZXJpYW4lMjBmYXNoaW9ufGVufDB8fDB8fHww",
+                "https://images.unsplash.com/photo-1661332306744-70f9ed1a7f40?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8bmlnZXJpYW4lMjBmYXNoaW9ufGVufDB8fDB8fHww",
+                "https://images.unsplash.com/photo-1702384927013-3df149c1bd44?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fG5pZ2VyaWFuJTIwZmFzaGlvbnxlbnwwfHwwfHx8MA%3D%3D",
+                "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=1600&q=80",
+                "https://images.unsplash.com/photo-1625646741211-711bdd65c570?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bmlnZXJpYW4lMjBmYXNoaW9ufGVufDB8fDB8fHww"
+            ];
+            
+            let currentImgIndex = 0;
+
+            function rotateHeroBackground() {
+                currentImgIndex = (currentImgIndex + 1) % backgroundImages.length;
+                const nextImageUrl = backgroundImages[currentImgIndex];
+
+                // Smooth luxury fade-out, image swap, and fade-in cycle using GSAP
+                gsap.to(bgLayer, {
+                    opacity: 0,
+                    duration: 1.2,
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        bgLayer.style.backgroundImage = `linear-gradient(to bottom, rgba(8, 8, 8, 0.3), var(--black)), url('${nextImageUrl}')`;
+                        gsap.to(bgLayer, {
+                            opacity: 1,
+                            duration: 1.2,
+                            ease: "power2.inOut"
+                        });
+                    }
+                });
+            }
+
+            // Set the interval loop for 30000ms (30 seconds)
+            setInterval(rotateHeroBackground, 30000);
+
+
+            // 1. PAGE LOAD TIMELINE (Sleek entry for the hero elements)
+            const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+
+            tl.to("#hero-title", {
+                y: 0,
+                duration: 1.2,
+                delay: 0.2
+            })
+            .to("#hero-desc", {
+                opacity: 1,
+                y: 0,
+                duration: 1.0
+            }, "-=0.8") 
+            .to("#hero-btn", {
+                opacity: 1,
+                y: 0,
+                duration: 1.0
+            }, "-=0.8")
+            .to("#main-header", {
+                opacity: 1,
+                duration: 0.8
+            }, "-=0.6");
+
+            // 2. SCROLL TRIGGER ANIMATIONS (For lower sections)
+            gsap.to("#main-header", {
+                backgroundColor: "rgba(8, 8, 8, 0.98)",
+                paddingTop: "12px",
+                paddingBottom: "12px",
+                scrollTrigger: {
+                    trigger: ".hero",
+                    start: "bottom 10%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+
+            // Reveal Collections Title on scroll
+            gsap.to("#collections-title", {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: ".collections",
+                    start: "top 80%"
+                }
+            });
+
+            // Reveal Collection Cards with a staggered fluid motion
+            gsap.to(".collection-card", {
+                opacity: 1,
+                y: 0,
+                duration: 1.2,
+                ease: "power3.out",
+                stagger: 0.2, 
+                scrollTrigger: {
+                    trigger: ".grid",
+                    start: "top 85%"
+                }
+            });
+        });
+    </script>
 </body>
 </html>

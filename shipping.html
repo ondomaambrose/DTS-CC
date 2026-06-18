@@ -40,6 +40,7 @@
     top: 0;
     z-index: 100;
     backdrop-filter: blur(12px);
+    opacity: 0; /* Animated by GSAP */
   }
 
   .nav-container {
@@ -112,12 +113,18 @@
     margin-bottom: 48px;
   }
 
+  /* Text Reveal Container */
+  .title-mask {
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
   .page-title {
     font-family: 'Cormorant Garamond', serif;
     font-size: 2.8rem;
     font-weight: 300;
     letter-spacing: 0.08em;
-    margin-bottom: 8px;
+    transform: translateY(100px); /* Animated by GSAP */
   }
 
   .page-subtitle {
@@ -125,6 +132,8 @@
     text-transform: uppercase;
     letter-spacing: 0.2em;
     color: var(--gold);
+    opacity: 0; /* Animated by GSAP */
+    transform: translateY(15px);
   }
 
   /* CONTROLS BAR */
@@ -135,6 +144,8 @@
     border-bottom: 1px solid var(--border);
     padding-bottom: 16px;
     margin-bottom: 32px;
+    opacity: 0; /* Animated by GSAP */
+    transform: translateY(15px);
   }
 
   .filter-group {
@@ -192,6 +203,8 @@
     position: relative;
     cursor: pointer;
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s;
+    opacity: 0; /* Dynamic initial state for incoming batch reveals */
+    transform: translateY(40px);
   }
   .product-card:hover {
     transform: translateY(-4px);
@@ -392,7 +405,7 @@
 </head>
 <body>
 
-  <header>
+  <header id="mainHeader">
     <div class="nav-container">
       <a href="shipping.html" class="logo">Couture Classics</a>
       <div class="nav-actions">
@@ -423,11 +436,11 @@
 
   <main>
     <div class="page-title-section">
-      <h1 class="page-title">The Atelier Archive</h1>
-      <p class="page-subtitle">Curated Luxury Architecture</p>
+      <div class="title-mask"><h1 class="page-title" id="pageTitle">The Atelier Archive</h1></div>
+      <p class="page-subtitle" id="pageSubtitle">Curated Luxury Architecture</p>
     </div>
 
-    <div class="controls-bar">
+    <div class="controls-bar" id="controlsBar">
       <div class="filter-group">
         <button class="filter-btn active" onclick="filterProducts('all', this)">All Creations</button>
         <button class="filter-btn" onclick="filterProducts('men', this)">Homme</button>
@@ -459,14 +472,37 @@
 
   <div class="toast" id="toast">Item added to bag</div>
 
+  <!-- --- GSAP CORE ANIMATION ENGINE & SCROLLTRIGGER --- -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
   <script>
-let products = []; 
+// --- STATE & PAGINATION MANAGEMENT ---
+let products = [];            // Raw database storage
+let filteredProducts = [];    // Filtered/sorted collection pool
 let currentFilter = 'all';
 let currentSort = 'default';
 let wishlisted = new Set();
 
+const ITEMS_PER_PAGE = 8;     // Control pagination chunk sizes
+let currentPage = 1;
+let infiniteObserver = null;  // Keeps track of runtime layout listeners
+
 updateCartBadge();
 
+// Initialize GSAP Core Intro Timelines on DOM load
+document.addEventListener("DOMContentLoaded", () => {
+  gsap.registerPlugin(ScrollTrigger);
+
+  const introTimeline = gsap.timeline({ defaults: { ease: "power4.out" } });
+  
+  introTimeline.to("#pageTitle", { y: 0, duration: 1.2, delay: 0.1 })
+               .to("#pageSubtitle", { opacity: 1, y: 0, duration: 0.8 }, "-=0.9")
+               .to("#controlsBar", { opacity: 1, y: 0, duration: 0.8 }, "-=0.7")
+               .to("#mainHeader", { opacity: 1, duration: 0.6 }, "-=0.8");
+});
+
+// --- CORE DATA STREAM PIPELINES ---
 async function fetchLiveProducts() {
   try {
     const response = await fetch('http://localhost:5000/api/products');
@@ -474,19 +510,51 @@ async function fetchLiveProducts() {
       throw new Error("Database offline");
     }
     products = await response.json();
-    renderProducts(getFiltered());
+    
+    // Process current filtering setup and display initial items
+    processCatalogUpdate();
   } catch (error) {
     console.error("Inventory sync error:", error);
     showToast("Error connecting to inventory database.");
   }
 }
 
-function renderProducts(list) {
-  const grid = document.getElementById('productsGrid');
-  if(!grid) return;
+// Reset view completely when user switches filters or sorting layers
+function processCatalogUpdate() {
+  currentPage = 1;
   
-  grid.innerHTML = list.map(p => {
-    // Prioritize p.img fallback assigned by server.js map
+  // Safely sever any existing layout observer connections
+  if (infiniteObserver) {
+    infiniteObserver.disconnect();
+    infiniteObserver = null;
+  }
+  
+  // Wipe out DOM grid container before processing a fresh load
+  const grid = document.getElementById('productsGrid');
+  if (grid) grid.innerHTML = '';
+
+  // Filter and sort total global cached state array
+  filteredProducts = getFilteredAndSortedList();
+  
+  // Fire first row batch render
+  loadNextProductBatch();
+}
+
+// Slices data rows and drops them to grid safely
+function loadNextProductBatch() {
+  const grid = document.getElementById('productsGrid');
+  if (!grid || filteredProducts.length === 0) return;
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, filteredProducts.length);
+  
+  const batch = filteredProducts.slice(startIndex, endIndex);
+  if (batch.length === 0) return;
+
+  // Use a temporary wrapper element to create real HTML node objects out of text
+  const tempContainer = document.createElement('div');
+  
+  tempContainer.innerHTML = batch.map(p => {
     const pImg = p.img || p.Img_Url || p.Img_url || p.IMG_URL || '';
     const pId = p.id || p.Product_ID || p.product_id || Math.random();
     const pName = p.name || p.Name || p.Product_Name || 'Luxury Apparel';
@@ -519,9 +587,60 @@ function renderProducts(list) {
       </div>
     </article>`;
   }).join('');
+
+  // Transform text string nodes into real elements and append smoothly to layout grid
+  const newNodes = Array.from(tempContainer.children);
+  newNodes.forEach(node => grid.appendChild(node));
+
+  // Run the premium fluid reveal timeline specifically for the freshly appended items
+  animateIncomingBatch(newNodes);
+
+  // Setup infinite scroll interception mapping on the last card in this slice
+  if (endIndex < filteredProducts.length) {
+    currentPage++;
+    setupInfiniteScrollTrigger(grid.lastElementChild);
+  }
 }
 
-function getFiltered() {
+// --- MOTION INTERACTION ENGINE ---
+function animateIncomingBatch(elements) {
+  // Set pristine initial position constraints outside styles
+  gsap.set(elements, { opacity: 0, y: 40 });
+
+  // Expose fluid reveal timeline dynamically as user encounters elements
+  gsap.to(elements, {
+    opacity: 1,
+    y: 0,
+    duration: 1.1,
+    ease: "power3.out",
+    stagger: 0.08,
+    clearProps: "transform", // Clears runtime CSS modifications to allow native hover properties
+    scrollTrigger: {
+      trigger: elements[0],
+      start: "top 95%"
+    }
+  });
+}
+
+// High performance dynamic window point boundary interception tracker
+function setupInfiniteScrollTrigger(targetCard) {
+  if (infiniteObserver) infiniteObserver.disconnect();
+
+  infiniteObserver = new IntersectionObserver((entries) => {
+    // Check if the final node entry point reaches user view thresholds
+    if (entries[0].isIntersecting) {
+      infiniteObserver.disconnect(); // Clear target hook context tracking to protect rendering iterations
+      loadNextProductBatch();
+    }
+  }, {
+    rootMargin: "0px 0px 400px 0px" // Trigger loads 400px early for completely transparent flow continuity
+  });
+
+  infiniteObserver.observe(targetCard);
+}
+
+// --- SYSTEM TRANSFORM LOGIC LAYERS ---
+function getFilteredAndSortedList() {
   let list = currentFilter === 'all' ? [...products] : products.filter(p => {
     const cat = (p.category || p.Category || '').toLowerCase();
     const bdg = (p.badge || p.Badge || '').toLowerCase();
@@ -541,18 +660,18 @@ function filterProducts(filter, btn) {
   currentFilter = filter;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  renderProducts(getFiltered());
+  processCatalogUpdate();
 }
 
 function sortProducts(val) {
   currentSort = val;
-  renderProducts(getFiltered());
+  processCatalogUpdate();
 }
 
+// --- MODULES FOR BASKET & INTEREST REGS ---
 function addToCart(e, id, name, price, img) {
   e.stopPropagation();
 
-  // AUTHENTICATION INTERCEPT BLOCK
   const currentUser = localStorage.getItem('cc_user');
   if (!currentUser) {
     showToast('Please sign in to access your bag.');
@@ -616,6 +735,7 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
 }
 
+// Fire runtime catalog initialization tracking routines
 fetchLiveProducts();
 </script>
 </body>
