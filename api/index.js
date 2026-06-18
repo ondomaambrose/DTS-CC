@@ -1,41 +1,38 @@
 // api/index.js
 const express = require('express');
 const mysql = require('mysql2');
-const cors = require('cors');
+const cors = require('cors'); // Retained if needed elsewhere in your stack
 const bcrypt = require('bcryptjs');
 const serverless = require('serverless-http'); // Wraps Express for Serverless
+const fs = require('fs').promises;             // Required for reading the root fallback JSON file
+const path = require('path');                  // Required for building precise directory pathways
 
 const app = express();
 
-// 1. ENHANCED SECURITY, CORS, & PRIVATE NETWORK ACCESS CONFIGURATION
-const allowedOrigins = ['https://dts-cc.vercel.app', 'http://localhost:3000', 'http://localhost:5000'];
+// 1. UNIFIED SECURITY, CORS, & PRIVATE NETWORK ACCESS LIFECYCLE ENGINE
+const allowedOrigins = [
+    'https://dts-cc.vercel.app', 
+    'http://localhost:3000', 
+    'http://localhost:5000'
+];
 
-app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
-            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-            return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'OPTIONS']
-}));
-
-// Specialized middleware patch to address Cross-Origin Local Loopback Restrictions
 app.use((req, res, next) => {
     const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.header("Access-Control-Allow-Origin", origin);
-    }
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     
-    // CRITICAL: Explicitly permits public internet deployments to tunnel down to local network boundaries
-    res.header("Access-Control-Allow-Private-Network", "true");
+    // Echo back the active matching origin to satisfy secure CORS policies
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader("Access-Control-Allow-Origin", origin);
+    }
+    
+    // Core authorization headers configuration
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Private-Network");
+    
+    // CRITICAL: Permits public Vercel links to cleanly request resources from your local network boundary
+    res.setHeader("Access-Control-Allow-Private-Network", "true");
 
-    // Immediately capture and resolve preflight OPTIONS headers before routing engine engagement
+    // Intercept and resolve preflight OPTIONS queries instantly before routing engine engagement
     if (req.method === 'OPTIONS') {
         return res.sendStatus(200);
     }
@@ -123,12 +120,13 @@ app.post('/api/signin', async (req, res) => {
     }
 });
 
-// 5. LIVE INVENTORY SYNC ROUTE
+// 5. LIVE INVENTORY SYNC ROUTE WITH ROOT JSON FILE FALLBACK
 app.get('/api/products', async (req, res) => {
     try {
+        // Primary Attempt: Try fetching directly from the live database
         const [rows] = await db.query('SELECT * FROM product');
         
-        if (rows.length > 0) {
+        if (rows && rows.length > 0) {
             const formattedProducts = rows.map(p => ({
                 id: p.Product_ID || p.id,
                 name: p.Name || p.name,
@@ -142,14 +140,38 @@ app.get('/api/products', async (req, res) => {
             return res.status(200).json(formattedProducts);
         }
         
-        return res.status(200).json([]);
+        // Throw to fallback loop if query finishes but database returns 0 rows
+        throw new Error("No live database entries found. Shifting to static file.");
+
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Database error");
+        console.warn("Database unavailable. Engaging root directory fallback JSON protocol:", err.message);
+        
+        try {
+            // Secondary Attempt: Target and read products.json from the parent root folder
+            const jsonPath = path.join(__dirname, '..', 'products.json');
+            const fileData = await fs.readFile(jsonPath, 'utf8');
+            const fallbackProducts = JSON.parse(fileData);
+
+            // Format data keys dynamically to guarantee matching API payloads
+            const formattedFallback = fallbackProducts.map(p => ({
+                id: p.Product_ID || p.id,
+                name: p.Name || p.name,
+                category: (p.Category || p.category || 'Women').toLowerCase(),
+                detail: p.Detail || p.detail || p.Description,
+                price: p.Price || p.price,
+                img: p.Img_Url || p.Img_URL || p.img_url || p.Img_url || "", 
+                badge: p.Badge || p.badge || null
+            }));
+
+            return res.status(200).json(formattedFallback);
+
+        } catch (fallbackErr) {
+            console.error("Critical Failure: Both database and root products.json are missing/unreadable.", fallbackErr);
+            return res.status(500).send("Database and static fallback files both unavailable.");
+        }
     }
 });
 
-// 6. EXPORT FOR VERCEL
-// Serverless environments manage execution lifecycles automatically; app.listen() is removed.
+// 6. EXPORT FOR VERCEL SERVERLESS ENVIRONMENT
 module.exports = app;
 module.exports.handler = serverless(app);
