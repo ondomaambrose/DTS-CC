@@ -1,0 +1,162 @@
+[
+	{
+		"Product_ID" : "PRD001",
+		"Name" : "Female Dashiki",
+		"Category" : "Women",
+		"Img_URL" : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWMpIACPvT5aIqtCGbBhW3dk7epK_KulnjQg&s",
+		"Detail" : "Vibrant loose-fitting tunic featuring ornate traditional geometric embroidery.",
+		"Price" : 25000.00
+	},
+	{
+		"Product_ID" : "PRD002",
+		"Name" : "The Heritage Gown",
+		"Category" : "Women",
+		"Img_URL" : "https://plus.unsplash.com/premium_photo-1668665110887-9f7e932dddeb?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8QWZyaWNhbiUyMGNsb3RoZXMlMjBvbiUyMGhhbmdlcnN8ZW58MHx8MHx8fDA%3D",
+		"Detail" : "Elegant floor-length statement gown designed for formal high-profile galas.",
+		"Price" : 65000.00
+	},
+	{
+		"Product_ID" : "PRD003",
+		"Name" : "Fitted Female Suit",
+		"Category" : "Women",
+		"Img_URL" : "https://images.unsplash.com/photo-1600091166971-7f9faad6c1e2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fFN1aXRzfGVufDB8fDB8fHww",
+		"Detail" : "Sharp custom-tailored power suit featuring structural Ankara lapel detailing.",
+		"Price" : 55000.00
+	},
+	{
+		"Product_ID" : "PRD004",
+		"Name" : "Sky Blue Blazer",
+		"Category" : "Men",
+		"Img_URL" : "https://plus.unsplash.com/premium_photo-1673627557215-1f9ad81b9004?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fFN1aXRzfGVufDB8fDB8fHww",
+		"Detail" : "Sophisticated smart-casual blazer with subtle interior West African trim lining.",
+		"Price" : 48000.00
+	},
+	{
+		"Product_ID" : "PRD005",
+		"Name" : "Royal Kente Agbada",
+		"Category" : "Men",
+		"Img_URL" : "https://images.unsplash.com/photo-1567894340315-735d7c361db0?w=500&q=80",
+		"Detail" : "Four-piece ceremonial wide-sleeved robe woven with prestigious thread work.",
+		"Price" : 70000.00
+	},
+	{
+		"Product_ID" : "PRD006",
+		"Name" : "Ankara Wrap Dress",
+		"Category" : "Women",
+		"Img_URL" : "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&q=80",
+		"Detail" : "Adjustable dynamic wrap dress sporting high-definition multi-colored wax prints.",
+		"Price" : 22000.00
+	},
+	{
+		"Product_ID" : "PRD007",
+		"Name" : "Broda Shadda Kaftan",
+		"Category" : "Men",
+		"Img_URL" : "https://images.unsplash.com/photo-1617137968427-85924c800a22?w=500&q=80",
+		"Detail" : "Minimalist Guinea Brocade long tunic styled with matching structural trousers.",
+		"Price" : 38000.00
+	},
+	{
+		"Product_ID" : "PRD008",
+		"Name" : "Aso Oke Mermaid Gown",
+		"Category" : "Women",
+		"Img_URL" : "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=500&q=80",
+		"Detail" : "Form-fitting reception masterpiece utilizing stiff handloomed celebratory cloth.",
+		"Price" : 68000.00
+	},
+	{
+		"Product_ID" : "PRD009",
+		"Name" : "Adire Bomber Jacket",
+		"Category" : "Men",
+		"Img_URL" : "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&q=80",
+		"Detail" : "Urban streetwear-inspired quilted outerwear treated with indigo resist-dye patterns.",
+		"Price" : 32000.00
+	},
+	{
+		"Product_ID" : "PRD010",
+		"Name" : "Peplum Ankara Blouse",
+		"Category" : "Women",
+		"Img_URL" : "https://images.unsplash.com/photo-1539008835657-9e8e81839967?w=500&q=80",
+		"Detail" : "Flared structural waist top that transitions smoothly from day wear to dinner events.",
+		"Price" : 20000.00
+	},
+	{
+		"Product_ID" : "PRD011",
+		"Name" : "Senator Set Signature",
+		"Category" : "Men",
+		"Img_URL" : "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=500&q=80",
+		"Detail" : "Polished military-collar short tunic popular across contemporary Nigerian workspaces.",
+		"Price" : 35000.00
+	},
+	{
+		"Product_ID" : "PRD012",
+		"Name" : "Zulu Beaded Maxi Dress",
+		"Category" : "Women",
+		"Img_URL" : "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=500&q=80",
+		"Detail" : "Flowing silhouette with an intricately woven geometric hand-beaded neckline halter.",
+		"Price" : 42000.00
+	},
+	{
+		"Product_ID" : "PRD013",
+		"Name" : "Grand Boubou Ceremonial",
+		"Category" : "Men",
+		"Img_URL" : "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=500&q=80",
+		"Detail" : "Flowing, majestic Sahelian formal dress displaying heavy silk surface embroidery.",
+		"Price" : 60000.00
+	},
+	{
+		"Product_ID" : "PRD014",
+		"Name" : "Tiered Ankara Sun Dress",
+		"Category" : "Women",
+		"Img_URL" : "https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=500&q=80",
+		"Detail" : "Light, breezy multi-tiered holiday resort dress cut entirely from soft pre-washed wax cotton.",
+		"Price" : 24000.00
+	},
+	{
+		"Product_ID" : "PRD015",
+		"Name" : "Linen Dashiki Shirt",
+		"Category" : "Men",
+		"Img_URL" : "https://images.unsplash.com/photo-1504593811423-6dd665756598?w=500&q=80",
+		"Detail" : "Breathable casual summer standard using updated monochrome V-neck borders.",
+		"Price" : 21000.00
+	},
+	{
+		"Product_ID" : "PRD016",
+		"Name" : "Safari Utility Jacket",
+		"Category" : "Men",
+		"Img_URL" : "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=500&q=80",
+		"Detail" : "Sturdy East African lightweight canvas utility piece with functional cargo pockets.",
+		"Price" : 34000.00
+	},
+	{
+		"Product_ID" : "PRD017",
+		"Name" : "Kente Accented Tuxedo",
+		"Category" : "Men",
+		"Img_URL" : "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=500&q=80",
+		"Detail" : "Formal peak-lapel tuxedo featuring stunning woven gold silk shawl inserts.",
+		"Price" : 69000.00
+	},
+	{
+		"Product_ID" : "PRD018",
+		"Name" : "Adire Pleated Skirt",
+		"Category" : "Women",
+		"Img_URL" : "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=500&q=80",
+		"Detail" : "High-waisted midi skirt designed with deep permanent knife pleats.",
+		"Price" : 23000.00
+	},
+	{
+		"Product_ID" : "PRD019",
+		"Name" : "Kimono Wax Duster",
+		"Category" : "Women",
+		"Img_URL" : "https://images.unsplash.com/photo-1544441893-675973e31985?w=500&q=80",
+		"Detail" : "Versatile open-front layer showcasing maximalist West African botanical prints.",
+		"Price" : 28000.00
+	},
+	{
+		"Product_ID" : "PRD020",
+		"Name" : "Embroidered Jalabiya",
+		"Category" : "Men",
+		"Img_URL" : "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=500&q=80",
+		"Detail" : "Comfortable full-length lounge kaftan accented with ornate gold thread threading.",
+		"Price" : 30000.00
+	}
+]

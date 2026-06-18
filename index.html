@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Couture Classics | Authentic African Elegance</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+    
+    <style>
+        /* --- EXACT COLORS FROM SHIPPING.HTML --- */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --black:         #080808;
+            --black-2:       #0f0f0f;
+            --black-3:       #161616;
+            --white:         #f8f4ef;
+            --gold:          #c9a96e;
+            --gold-light:    #e2c99a;
+            --gold-dim:      rgba(201,169,110,0.18);
+            --border:        rgba(201,169,110,0.22);
+            --border-bright: rgba(201,169,110,0.5);
+        }
+
+        body {
+            background-color: var(--black);
+            color: var(--white);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* --- HEADER & NAVIGATION --- */
+        header {
+            background-color: rgba(8, 8, 8, 0.9);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .nav-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 400;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .nav-actions a {
+            color: rgba(248, 244, 239, 0.85);
+            transition: color 0.3s;
+        }
+
+        .nav-actions a:hover {
+            color: var(--gold);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            /* Gradient fades smoothly into your --black background */
+            background: linear-gradient(to bottom, rgba(8, 8, 8, 0.3), var(--black)), 
+                        url('https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=1600&q=80') center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            margin-top: 0;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            margin-bottom: 16px;
+            letter-spacing: 0.05em;
+            color: var(--white);
+            max-width: 900px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            max-width: 600px;
+            color: rgba(248, 244, 239, 0.7);
+            line-height: 1.6;
+        }
+
+        .btn-primary {
+            background-color: var(--gold);
+            color: var(--black);
+            padding: 14px 36px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 600;
+            border: 1px solid var(--gold);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: transparent;
+            color: var(--gold);
+        }
+
+        /* --- COLLECTION TEASER --- */
+        .collections {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 80px 40px;
+            text-align: center;
+        }
+
+        .collections h2 {
+            font-size: 2.8rem;
+            margin-bottom: 48px;
+            letter-spacing: 0.08em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background-color: var(--black-2);
+            border: 1px solid var(--border);
+            position: relative;
+            height: 450px;
+            overflow: hidden;
+            transition: border-color 0.4s;
+        }
+
+        .card:hover {
+            border-color: var(--border-bright);
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            transition: transform 0.6s ease, opacity 0.6s ease;
+        }
+
+        .card:hover img {
+            transform: scale(1.03);
+            opacity: 1;
+        }
+
+        .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(transparent, var(--black));
+            padding: 40px 20px 20px;
+            text-align: center;
+        }
+
+        .card-overlay h3 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            color: var(--gold-light);
+        }
+
+        .card-overlay p {
+            font-size: 0.8rem;
+            color: rgba(248, 244, 239, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            border-top: 1px solid var(--border);
+            background-color: var(--black-2);
+            padding: 40px 0 30px;
+            margin-top: 40px;
+        }
+        .footer-inner {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .footer-brand p {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(248, 244, 239, 0.5);
+        }
+        .footer-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        .footer-links a {
+            color: rgba(248, 244, 239, 0.3);
+            text-decoration: none;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover {
+            color: var(--gold);
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .nav-container, .footer-inner { flex-direction: column; gap: 20px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">Couture Classics</a>
+            <div class="nav-actions">
+                <a href="shipping.html">The Archive</a>
+                <a href="Couture Classics – Sign In.html">Sign In</a>
+                <a href="cart.html">Bag</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Authentic African Elegance</h1>
+        <p>Discover our meticulously curated collection of premium Ankara, Dashiki, and Kente designs. Tailored for the modern trailblazer.</p>
+        <a href="shipping.html" class="btn-primary">Explore the Collection</a>
+    </section>
+
+    <section class="collections">
+        <h2>Curated For You</h2>
+        <div class="grid">
+            <a href="shipping.html" class="card">
+                <img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&q=80" alt="Women's Ankara">
+                <div class="card-overlay">
+                    <h3>Femme</h3>
+                    <p>Bold prints & flowing silhouettes</p>
+                </div>
+            </a>
+            <a href="shipping.html" class="card">
+                <img src="https://images.unsplash.com/photo-1621335829175-95f437384d7c?w=600&q=80" alt="Men's Agbada">
+                <div class="card-overlay">
+                    <h3>Homme</h3>
+                    <p>Sharp tailoring & ceremonial classics</p>
+                </div>
+            </a>
+            <a href="shipping.html" class="card">
+                <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80" alt="Modern Fusion">
+                <div class="card-overlay">
+                    <h3>New Arrivals</h3>
+                    <p>Streetwear meets heritage</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <p>Couture Classics</p>
+            </div>
+            <ul class="footer-links">
+                <li><a href="#">Privacy Architecture</a></li>
+                <li><a href="#">Atelier Relations</a></li>
+                <li><a href="#">Help Registry</a></li>
+            </ul>
+        </div>
+    </footer>
+
+</body>
+</html>

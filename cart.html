@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Couture Classics — Your Cart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black:         #080808;
+    --black-2:       #0f0f0f;
+    --black-3:       #161616;
+    --white:         #f8f4ef;
+    --gold:          #c9a96e;
+    --gold-light:    #e2c99a;
+    --gold-dim:      rgba(201,169,110,0.18);
+    --border:        rgba(201,169,110,0.22);
+    --border-bright: rgba(201,169,110,0.5);
+  }
+
+  body {
+    background-color: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* HEADER & NAVIGATION */
+  header {
+    background-color: rgba(8, 8, 8, 0.9);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--white);
+    text-decoration: none;
+    font-weight: 400;
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .nav-link-icon {
+    color: var(--white);
+    text-decoration: none;
+    position: relative;
+    opacity: 0.85;
+    transition: opacity 0.2s, color 0.2s;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .nav-link-icon:hover {
+    opacity: 1;
+    color: var(--gold);
+  }
+
+  .cart-badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    background-color: var(--gold);
+    color: var(--black);
+    font-size: 0.65rem;
+    font-weight: 700;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* LAYOUT MATRIX */
+  main {
+    flex: 1;
+    max-width: 1300px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 60px 40px;
+  }
+
+  .cart-title-wrap {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    margin-bottom: 40px;
+  }
+
+  .cart-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+  }
+
+  .cart-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 60px;
+    align-items: flex-start;
+  }
+
+  /* BAG PRODUCTS */
+  .cart-items-section {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .empty-state {
+    padding: 60px 0;
+    text-align: center;
+    color: rgba(248, 244, 239, 0.4);
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+  }
+
+  .cart-item {
+    display: flex;
+    gap: 24px;
+    border-bottom: 1px solid var(--border);
+    padding: 30px 0;
+  }
+  .cart-item:first-child { padding-top: 0; }
+
+  .item-img-wrap {
+    width: 110px;
+    height: 143px;
+    background-color: #121212;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.03);
+  }
+  .item-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+
+  .item-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .item-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 4px;
+  }
+
+  .item-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--white);
+  }
+
+  .item-price {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--gold-light);
+  }
+
+  .item-desc {
+    font-size: 0.78rem;
+    color: rgba(248, 244, 239, 0.4);
+    margin-bottom: 16px;
+  }
+
+  .item-actions-row {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .qty-selector {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    background-color: var(--black-2);
+  }
+  .qty-btn {
+    background: none;
+    border: none;
+    color: var(--white);
+    width: 32px; height: 32px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .qty-btn:hover { background-color: rgba(255,255,255,0.03); }
+  
+  .qty-val {
+    width: 36px;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .secondary-action-links {
+    display: flex;
+    gap: 20px;
+  }
+  .sec-link {
+    background: none;
+    border: none;
+    color: rgba(248, 244, 239, 0.35);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: color 0.2s;
+    text-decoration: none;
+  }
+  .sec-link:hover { color: var(--gold); }
+
+  /* SUMMARY BAR PANELS */
+  .summary-sidebar {
+    background-color: var(--black-2);
+    border: 1px solid var(--border);
+    padding: 30px;
+    position: sticky;
+    top: 110px;
+  }
+
+  .summary-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+  }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    font-size: 0.82rem;
+    color: rgba(248, 244, 239, 0.6);
+    letter-spacing: 0.03em;
+  }
+  .summary-row.grand-total {
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    margin-top: 20px;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--white);
+  }
+  .summary-row.grand-total .total-val {
+    color: var(--gold-light);
+    font-size: 1.2rem;
+  }
+
+  .promo-wrap {
+    margin-top: 30px;
+    display: flex;
+    gap: 10px;
+  }
+  .promo-input {
+    flex: 1;
+    background-color: var(--black-3);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 10px 14px;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    outline: none;
+    text-transform: uppercase;
+  }
+  .promo-input:focus { border-color: var(--border-bright); }
+  
+  .promo-btn {
+    background: none;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 0 16px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+  }
+  .promo-btn:hover { background-color: var(--gold); color: var(--black); }
+
+  .checkout-cta-btn {
+    width: 100%;
+    background-color: var(--gold);
+    color: var(--black);
+    border: 1px solid var(--gold);
+    padding: 14px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 600;
+    margin-top: 30px;
+    cursor: pointer;
+    transition: background 0.3s, border-color 0.3s, color 0.3s;
+  }
+  .checkout-cta-btn:hover {
+    background-color: transparent;
+    color: var(--gold);
+  }
+
+  /* SAVED LIST SUBSECTION */
+  .saved-archive-section {
+    margin-top: 80px;
+    border-top: 1px solid var(--border);
+    padding-top: 40px;
+  }
+  .saved-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    margin-bottom: 24px;
+  }
+  .saved-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 30px;
+  }
+  .saved-card {
+    background-color: var(--black-2);
+    border: 1px solid var(--border);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .saved-img-wrap {
+    width: 100%;
+    padding-top: 130%;
+    background-color: #121212;
+    position: relative;
+  }
+  .saved-meta-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.02em;
+  }
+  .saved-meta-price {
+    font-size: 0.88rem;
+    color: var(--gold-light);
+    margin-top: 2px;
+  }
+  .saved-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid rgba(201,169,110,0.08);
+  }
+
+  /* FOOTER INTERFACES */
+  footer {
+    border-top: 1px solid var(--border);
+    background-color: var(--black-2);
+    padding: 40px 0 30px;
+    margin-top: auto;
+  }
+  .footer-inner {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-brand p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(248, 244, 239, 0.5);
+  }
+  .footer-links {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+  }
+  .footer-links a {
+    color: rgba(248, 244, 239, 0.3);
+    text-decoration: none;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .footer-links a:hover { color: var(--gold); }
+
+  /* LIVE TOAST SYSTEM */
+  .toast {
+    position: fixed;
+    bottom: 30px; right: 30px;
+    background-color: var(--black-3);
+    border: 1px solid var(--gold);
+    color: var(--white);
+    padding: 12px 24px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+    z-index: 1000;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  @media (max-width: 992px) {
+    .cart-grid { grid-template-columns: 1fr; gap: 40px; }
+    main { padding: 40px 20px; }
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="nav-container">
+      <a href="shipping.html" class="logo">Couture Classics</a>
+      <div class="nav-actions">
+        <a href="Couture Classics – Sign In.html" class="nav-link-icon">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+          </svg>
+        </a>
+        <a href="cart.html" class="nav-link-icon">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <span class="cart-badge" id="cartCount">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="cart-title-wrap">
+      <h1 class="cart-title">Your Shopping Bag <span id="bagTitleCount">(0)</span></h1>
+    </div>
+
+    <div class="cart-grid">
+      <section class="cart-items-section" id="cartContainer"></section>
+
+      <aside class="summary-sidebar">
+        <h2 class="summary-title">Order Overview</h2>
+        <div class="summary-row">
+          <span>Bag Subtotal</span>
+          <span id="summarySubtotal">$0</span>
+        </div>
+        <div class="summary-row">
+          <span>Estimated Logistics</span>
+          <span id="summaryShipping">$0</span>
+        </div>
+        <div class="summary-row grand-total">
+          <span>Total (USD)</span>
+          <span class="total-val" id="summaryTotal">$0</span>
+        </div>
+
+        <div class="promo-wrap">
+          <input type="text" class="promo-input" id="promoInput" placeholder="Enter Promo Code" />
+          <button class="promo-btn" onclick="applyPromo()">Apply</button>
+        </div>
+
+        <button class="checkout-cta-btn" onclick="handleCheckout()">Proceed to Secure Checkout</button>
+      </aside>
+    </div>
+
+    <section class="saved-archive-section">
+      <h2 class="saved-title">Saved for Later</h2>
+      <div class="saved-grid" id="savedContainer"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <p>Couture Classics</p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="#">Privacy Architecture</a></li>
+        <li><a href="#">Atelier Relations</a></li>
+        <li><a href="#">Help Registry</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast">Cart update synchronized</div>
+
+  <script>
+    // READ CORE DATA STRUCTURES FROM INTER-PAGE BROWSER STORAGE
+    let cartItems = JSON.parse(localStorage.getItem('cc_cart')) || [];
+    let savedItems = JSON.parse(localStorage.getItem('cc_saved')) || [];
+
+    function saveCartToStorage() {
+      localStorage.setItem('cc_cart', JSON.stringify(cartItems));
+    }
+
+    function saveSavedToStorage() {
+      localStorage.setItem('cc_saved', JSON.stringify(savedItems));
+    }
+
+    function renderCart() {
+      const container = document.getElementById('cartContainer');
+      if (!container) return;
+
+      if (cartItems.length === 0) {
+        container.innerHTML = `<div class="empty-state">Your curated shopping bag is currently empty.</div>`;
+        updateSummaryLayout(0);
+        updateHeaderCounts();
+        return;
+      }
+
+      container.innerHTML = cartItems.map(item => {
+        const itemPrice = Number(item.price) || 0;
+        const itemImg = item.img || '';
+        return `
+        <article class="cart-item" data-id="${item.id}">
+          <div class="item-img-wrap">
+            <img class="item-img" src="${itemImg}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80'" />
+          </div>
+          <div class="item-details">
+            <div class="item-header-row">
+              <h3 class="item-name">${item.name}</h3>
+              <span class="item-price">$${(itemPrice * item.quantity).toLocaleString()}</span>
+            </div>
+            <p class="item-desc">Atelier Curated Edition</p>
+            <div class="item-actions-row">
+              <div class="qty-selector">
+                <button class="qty-btn" onclick="adjustQty('${item.id}', -1)">−</button>
+                <span class="qty-val">${item.quantity}</span>
+                <button class="qty-btn" onclick="adjustQty('${item.id}', 1)">+</button>
+              </div>
+              <div class="secondary-action-links">
+                <button class="sec-link" onclick="saveForLater('${item.id}')">Save For Later</button>
+                <button class="sec-link" onclick="removeItem('${item.id}')">Remove</button>
+              </div>
+            </div>
+          </div>
+        </article>`;
+      }).join('');
+
+      // Recalculate financial breakdown metrics
+      const currentSubtotal = cartItems.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
+      updateSummaryLayout(currentSubtotal);
+      updateHeaderCounts();
+    }
+
+    function renderSavedList() {
+      const container = document.getElementById('savedContainer');
+      if (!container) return;
+
+      if (savedItems.length === 0) {
+        container.innerHTML = `<div class="empty-state" style="grid-column: 1/-1; padding: 20px 0;">No items archived in reserve.</div>`;
+        return;
+      }
+
+      container.innerHTML = savedItems.map(item => {
+        return `
+        <div class="saved-card">
+          <div class="saved-img-wrap">
+            <img class="item-img" style="position:absolute; top:0; left:0;" src="${item.img}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80'" />
+          </div>
+          <div>
+            <h3 class="saved-meta-name">${item.name}</h3>
+            <p class="saved-meta-price">$${Number(item.price).toLocaleString()}</p>
+          </div>
+          <div class="saved-card-footer">
+            <button class="sec-link" style="color: var(--gold);" onclick="moveToBag('${item.id}')">Move To Bag</button>
+            <button class="sec-link" onclick="removeSavedItem('${item.id}')">Delete</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function adjustQty(id, delta) {
+      const item = cartItems.find(i => i.id === id);
+      if (!item) return;
+
+      item.quantity += delta;
+      if (item.quantity <= 0) {
+        cartItems = cartItems.filter(i => i.id !== id);
+      }
+      
+      saveCartToStorage();
+      renderCart();
+    }
+
+    function removeItem(id) {
+      const item = cartItems.find(i => i.id === id);
+      cartItems = cartItems.filter(i => i.id !== id);
+      saveCartToStorage();
+      renderCart();
+      if(item) showToast(`${item.name} removed from bag`);
+    }
+
+    function saveForLater(id) {
+      const item = cartItems.find(i => i.id === id);
+      if (!item) return;
+
+      // Extract from active cart layout
+      cartItems = cartItems.filter(i => i.id !== id);
+      saveCartToStorage();
+
+      // Check duplicate status in saved directory archive
+      if (!savedItems.some(i => i.id === id)) {
+        savedItems.push({ id: item.id, name: item.name, price: item.price, img: item.img });
+        saveSavedToStorage();
+      }
+
+      renderCart();
+      renderSavedList();
+      showToast(`${item.name} saved for later`);
+    }
+
+    function moveToBag(id) {
+      const item = savedItems.find(i => i.id === id);
+      if (!item) return;
+
+      // Remove from saved registry listing
+      savedItems = savedItems.filter(i => i.id !== id);
+      saveSavedToStorage();
+
+      // Push back down inside active checkout directory queue
+      const existingInCart = cartItems.find(i => i.id === id);
+      if (existingInCart) {
+        existingInCart.quantity += 1;
+      } else {
+        cartItems.push({ id: item.id, name: item.name, price: item.price, img: item.img, quantity: 1 });
+      }
+      
+      saveCartToStorage();
+      renderCart();
+      renderSavedList();
+      showToast(`${item.name} returned to bag`);
+    }
+
+    function removeSavedItem(id) {
+      savedItems = savedItems.filter(i => i.id !== id);
+      saveSavedToStorage();
+      renderSavedList();
+      showToast("Archive reference deleted");
+    }
+
+    function updateSummaryLayout(subtotal) {
+      const shippingCost = subtotal > 0 ? 25 : 0; // Flat luxury processing fee
+      const grandTotal = subtotal + shippingCost;
+
+      document.getElementById('summarySubtotal').textContent = `$${subtotal.toLocaleString()}`;
+      document.getElementById('summaryShipping').textContent = shippingCost > 0 ? `$${shippingCost}` : "$0";
+      document.getElementById('summaryTotal').textContent = `$${grandTotal.toLocaleString()}`;
+    }
+
+    function updateHeaderCounts() {
+      const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+      document.getElementById('cartCount').textContent = totalCount;
+      document.getElementById('bagTitleCount').textContent = `(${totalCount})`;
+    }
+
+    function applyPromo() {
+      const code = document.getElementById('promoInput').value.trim().toUpperCase();
+      if (code === 'COUTURE10') {
+        showToast('Promo code verified: 10% Off Applied!');
+      } else if (!code) {
+        showToast('Please type a code');
+      } else {
+        showToast('Promo variant unrecognized');
+      }
+    }
+
+    function handleCheckout() {
+      if (cartItems.length === 0) {
+        showToast('Your bag is empty.');
+        return;
+      }
+      showToast('Redirecting to secure terminal...');
+      setTimeout(() => { window.location.href = 'checkout.html'; }, 1000);
+    }
+
+    let toastTimer;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      if (!t) return;
+      t.textContent = msg; 
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    // Load elements sequentially upon view framing instantiation setup
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCart();
+      renderSavedList();
+    });
+  </script>
+</body>
+</html>

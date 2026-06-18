@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Couture Classics — Secure Checkout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black:         #080808;
+    --black-2:       #0f0f0f;
+    --black-3:       #161616;
+    --white:         #f8f4ef;
+    --gold:          #c9a96e;
+    --gold-light:    #e2c99a;
+    --gold-dim:      rgba(201,169,110,0.18);
+    --border:        rgba(201,169,110,0.22);
+    --border-bright: rgba(201,169,110,0.5);
+  }
+
+  body {
+    background-color: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 24px 0;
+    text-align: center;
+    background-color: var(--black-2);
+  }
+  .header-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  main {
+    flex: 1;
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+  }
+
+  .checkout-grid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 40px;
+    align-items: start;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    margin-bottom: 20px;
+    color: var(--gold-light);
+    text-transform: uppercase;
+  }
+
+  .form-card {
+    background-color: var(--black-2);
+    border: 1px solid var(--border);
+    padding: 30px;
+    margin-bottom: 24px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+  .form-group.last { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(248, 244, 239, 0.5);
+    margin-bottom: 6px;
+  }
+
+  input {
+    width: 100%;
+    background-color: var(--black-3);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 11px 14px;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus { border-color: var(--gold); }
+
+  .payment-option {
+    border: 1px solid var(--border);
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    background-color: var(--black-3);
+    transition: all 0.2s;
+  }
+  .payment-option.active {
+    border-color: var(--gold);
+    background-color: rgba(201, 169, 110, 0.03);
+  }
+  .payment-option input[type="radio"] {
+    width: auto;
+    accent-color: var(--gold);
+  }
+  .payment-text h4 {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .payment-text p {
+    font-size: 0.74rem;
+    color: rgba(248,244,239,0.4);
+  }
+
+  .summary-sidebar {
+    background-color: var(--black-2);
+    border: 1px solid var(--border);
+    padding: 24px;
+  }
+  .summary-items-list {
+    max-height: 280px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+  }
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(201,169,110,0.1);
+  }
+  .summary-item:first-child { padding-top: 0; }
+  
+  .sum-item-left {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .sum-item-left img {
+    width: 44px; height: 54px;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    background-color: var(--black-3);
+  }
+  .sum-item-left h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+  }
+  .sum-item-left p {
+    font-size: 0.72rem;
+    color: rgba(248,244,239,0.4);
+  }
+  .sum-item-price { font-size: 0.88rem; color: var(--gold-light); }
+
+  .price-row {
+    display: flex; justify-content: space-between;
+    font-size: 0.82rem; color: rgba(248,244,239,0.5);
+    margin-bottom: 10px;
+  }
+  .price-divider { height: 1px; background-color: var(--border); margin: 16px 0; }
+  
+  .total-row {
+    display: flex; justify-content: space-between;
+    font-size: 1.05rem; font-weight: 500; margin-bottom: 24px;
+  }
+
+  .btn-submit-order {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--gold);
+    color: var(--black);
+    border: 1px solid var(--gold);
+    font-size: 0.76rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .btn-submit-order:hover {
+    background-color: transparent;
+    color: var(--gold-light);
+  }
+
+  .success-panel {
+    display: none;
+    max-width: 580px;
+    margin: 40px auto;
+    text-align: center;
+    background-color: var(--black-2);
+    border: 1px solid var(--border);
+    padding: 50px 40px;
+    animation: slideUp 0.5s ease both;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .success-icon {
+    width: 54px; height: 54px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    color: var(--gold);
+  }
+  .success-panel h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem; font-weight: 300; margin-bottom: 8px;
+  }
+  .order-ref {
+    font-size: 0.8rem; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--gold); margin-bottom: 30px;
+  }
+  .receipt-box {
+    background-color: var(--black-3);
+    border: 1px solid rgba(201,169,110,0.1);
+    padding: 20px; text-align: left; font-size: 0.84rem;
+    margin-bottom: 30px; line-height: 1.6;
+  }
+  .receipt-box h4 {
+    text-transform: uppercase; font-size: 0.72rem;
+    letter-spacing: 0.08em; color: rgba(248,244,239,0.4);
+    margin-bottom: 4px; margin-top: 12px;
+  }
+  .receipt-box h4:first-child { margin-top: 0; }
+
+  .btn-return-home {
+    display: inline-block;
+    padding: 12px 30px;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    text-decoration: none;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    transition: background 0.3s, color 0.3s;
+  }
+  .btn-return-home:hover { background-color: var(--gold); color: var(--black); }
+
+  @media (max-width: 800px) {
+    .checkout-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <a href="shipping.html" class="header-logo">Couture Classics</a>
+  </header>
+
+  <main>
+    <div class="checkout-grid" id="checkoutStage">
+      
+      <form id="billingForm" onsubmit="executeOrderPlacement(event)">
+        <h2 class="section-title">Shipping Logistics</h2>
+        <div class="form-card">
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" placeholder="Julian" required />
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" placeholder="Vance" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Delivery Address</label>
+            <input type="text" placeholder="742 Fifth Avenue, Apt 11B" required />
+          </div>
+          <div class="form-row">
+            <div class="form-group last">
+              <label>City</label>
+              <input type="text" placeholder="Lagos" required />
+            </div>
+            <div class="form-group last">
+              <label>Postal Code</label>
+              <input type="text" placeholder="100001" required />
+            </div>
+          </div>
+        </div>
+
+        <h2 class="section-title">Payment Architecture</h2>
+        <div class="form-card">
+          <div class="payment-option active" onclick="selectPaymentOption(this)">
+            <input type="radio" name="paymentMethod" checked />
+            <div class="payment-text">
+              <h4>Secure Credit System</h4>
+              <p>Visa, Mastercard, American Express</p>
+            </div>
+          </div>
+          <div class="payment-option" onclick="selectPaymentOption(this)">
+            <input type="radio" name="paymentMethod" />
+            <div class="payment-text">
+              <h4>Bank Transfer Protocol</h4>
+              <p>Instant automated settlement pipeline</p>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" id="hiddenSubmitBtn" style="display:none;"></button>
+      </form>
+
+      <div class="summary-sidebar">
+        <h2 class="section-title" style="font-size:1.2rem; margin-bottom:16px;">Your Order</h2>
+        <div class="summary-items-list" id="summaryItemsContainer"></div>
+
+        <div class="price-row">
+          <span>Subtotal</span>
+          <span id="checkoutSubtotal">$0</span>
+        </div>
+        <div class="price-row">
+          <span>Shipping Asset Delivery</span>
+          <span id="checkoutShipping">$0</span>
+        </div>
+        <div class="price-divider"></div>
+        <div class="total-row">
+          <span>Grand Total</span>
+          <span style="color:var(--gold-light);" id="checkoutTotal">$0</span>
+        </div>
+
+        <button type="button" class="btn-submit-order" onclick="triggerFormSubmit()">
+          <span>Authorize Payment (<span id="btnPayAmount">$0</span>)</span>
+        </button>
+      </div>
+
+    </div>
+
+    <div class="success-panel" id="successStage">
+      <div class="success-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h2>Order Authorized</h2>
+      <p class="order-ref" id="successOrderNum">Order Reference: #CC-000000</p>
+      
+      <div class="receipt-box">
+        <h4>Recipient Identity</h4>
+        <p id="receiptName">Value Customer</p>
+        
+        <h4>Logistics Routing Destination</h4>
+        <p id="receiptAddr">Shipping Address Provided</p>
+        
+        <h4>Delivery Allocation</h4>
+        <p>Premium Tracked Courier Delivery (3-5 business days)</p>
+      </div>
+      
+      <p style="font-size: 0.84rem; color: rgba(248,244,239,0.4); margin-bottom: 30px;">
+        A confirmation receipt breakdown invoice has been dispatched to your verified email dashboard profile.
+      </p>
+      <a href="shipping.html" class="btn-return-home">Return To Storefront Collection</a>
+    </div>
+  </main>
+
+  <script>
+    let checkoutItems = JSON.parse(localStorage.getItem('cc_cart')) || [];
+
+    function initSummaryLayout() {
+      const container = document.getElementById('summaryItemsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (checkoutItems.length === 0) {
+        container.innerHTML = `<p style="color:rgba(248,244,239,0.3); padding:20px 0;">Your checkout basket is empty.</p>`;
+        return;
+      }
+
+      let subtotal = 0;
+      checkoutItems.forEach(item => {
+        const quantity = item.quantity || item.qty || 1;
+        const price = Number(item.price) || 0;
+        const lineCost = price * quantity;
+        subtotal += lineCost;
+
+        const row = document.createElement('div');
+        row.className = 'summary-item';
+        row.innerHTML = `
+          <div class="sum-item-left">
+            <img src="${item.img}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80'">
+            <div>
+              <h4>${item.name}</h4>
+              <p>Qty: ${quantity}</p>
+            </div>
+          </div>
+          <span class="sum-item-price">$${lineCost.toLocaleString()}</span>
+        `;
+        container.appendChild(row);
+      });
+
+      const shipping = subtotal > 0 ? 25 : 0;
+      const total = subtotal + shipping;
+
+      document.getElementById('checkoutSubtotal').textContent = `$${subtotal.toLocaleString()}`;
+      document.getElementById('checkoutShipping').textContent = `$${shipping.toLocaleString()}`;
+      document.getElementById('checkoutTotal').textContent = `$${total.toLocaleString()}`;
+      document.getElementById('btnPayAmount').textContent = `$${total.toLocaleString()}`;
+    }
+
+    function selectPaymentOption(element) {
+      document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('active'));
+      element.classList.add('active');
+      const radioBtn = element.querySelector('input[type="radio"]');
+      if(radioBtn) radioBtn.checked = true;
+    }
+
+    function triggerFormSubmit() {
+      document.getElementById('hiddenSubmitBtn').click();
+    }
+
+    function executeOrderPlacement(event) {
+      event.preventDefault(); 
+
+      const randomlyGeneratedRef = Math.floor(100000 + Math.random() * 900000);
+      const orderRefString = `#CC-${randomlyGeneratedRef}`;
+      document.getElementById('successOrderNum').textContent = `Order Reference: ${orderRefString}`;
+
+      const inputs = document.getElementById('billingForm').getElementsByTagName('input');
+      const customerName = (inputs[0]?.value || "Valued") + " " + (inputs[1]?.value || "Customer");
+      const shippingAddr = inputs[2]?.value || "Standard Delivery Address Provided";
+
+      document.getElementById('receiptName').textContent = customerName;
+      document.getElementById('receiptAddr').textContent = shippingAddr;
+
+      // Compile and append order information to localStorage Order History array
+      let historicalRecords = JSON.parse(localStorage.getItem('cc_orders')) || [];
+      
+      let subtotal = checkoutItems.reduce((acc, item) => acc + ((item.price || 0) * (item.quantity || item.qty || 1)), 0);
+      let totalValue = subtotal > 0 ? subtotal + 25 : 0;
+
+      const currentNewOrder = {
+        id: orderRefString,
+        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        value: totalValue,
+        status: 'transit',
+        items: checkoutItems.map(item => ({
+          name: item.name,
+          quantity: item.quantity || item.qty || 1,
+          img: item.img
+        }))
+      };
+
+      historicalRecords.unshift(currentNewOrder); 
+      localStorage.setItem('cc_orders', JSON.stringify(historicalRecords));
+
+      // Clear operational cart session
+      localStorage.removeItem('cc_cart');
+
+      document.getElementById('checkoutStage').style.display = 'none';
+      document.getElementById('successStage').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initSummaryLayout();
+    });
+  </script>
+</body>
+</html>

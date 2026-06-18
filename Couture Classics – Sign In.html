@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Couture Classics – Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #080808;
+      --white: #f8f4ef;
+      --gold: #c9a96e;
+      --gold-light: #e2c99a;
+      --gold-dim: rgba(201,169,110,0.18);
+      --border: rgba(201,169,110,0.22);
+      --border-bright: rgba(201,169,110,0.5);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--black);
+      overflow-x: hidden;
+    }
+
+    /* ══ BACKGROUND ══ */
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: radial-gradient(circle at 80% 20%, #1c1813 0%, var(--black) 70%);
+    }
+
+    /* ══ HEADER ══ */
+    header {
+      padding: 30px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    /* ══ SPLIT CONTAINER ══ */
+    .auth-container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .panel {
+      padding: 60px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .panel-left {
+      border-right: 1px solid var(--border);
+    }
+
+    .panel h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.4rem;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+
+    .panel p.subtitle {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      margin-bottom: 40px;
+    }
+
+    /* ══ FORM ELEMENTS ══ */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      max-width: 440px;
+      width: 100%;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(248, 244, 239, 0.5);
+    }
+
+    input {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: 14px;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      border-color: var(--gold);
+      background: rgba(201, 169, 110, 0.02);
+    }
+
+    /* Error Messages */
+    .error-msg {
+      color: #f87171;
+      font-size: 0.72rem;
+      margin-top: 4px;
+      display: none;
+      letter-spacing: 0.02em;
+    }
+
+    /* Buttons */
+    .btn-submit {
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      padding: 16px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      cursor: pointer;
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+      margin-top: 10px;
+      transition: color 0.4s ease;
+    }
+
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--gold);
+      transform: translateX(-101%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: -1;
+    }
+
+    .btn-submit:hover::before {
+      transform: translateX(0);
+    }
+
+    .btn-submit:hover {
+      color: var(--black);
+    }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 968px) {
+      .auth-container { grid-template-columns: 1fr; }
+      .panel-left { border-right: none; border-bottom: 1px solid var(--border); }
+      .panel { padding: 40px 30px; align-items: center; }
+      form { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg"></div>
+
+  <header>
+    <a href="shipping.html" class="logo">Couture Classics</a>
+  </header>
+
+  <main class="auth-container">
+    
+    <section class="panel panel-left">
+      <h2>Registered Clients</h2>
+      <p class="subtitle">Access Your Atelier Profile</p>
+      
+      <form id="signinForm" novalidate>
+        <div class="form-group">
+          <label for="signinEmail">Email Address</label>
+          <input type="email" id="signinEmail" placeholder="vance@atelier.com" required>
+          <div class="error-msg" id="loginEmailError">Please enter a valid email profile.</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="signinPassword">Password</label>
+          <input type="password" id="signinPassword" placeholder="••••••••" required>
+          <div class="error-msg" id="loginPasswordError">Password must be at least 6 characters long.</div>
+        </div>
+
+        <button type="submit" class="btn-submit">Sign In Securely</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Create An Account</h2>
+      <p class="subtitle">Join The Archive Collective</p>
+      
+      <form id="signupForm" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" placeholder="Julian" required>
+            <div class="error-msg" id="firstNameError">First name is required.</div>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" placeholder="Vance" required>
+            <div class="error-msg" id="lastNameError">Last name is required.</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="+234..." required>
+          <div class="error-msg" id="phoneError">Phone profile is required.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="signupEmail">Email Address</label>
+          <input type="email" id="signupEmail" placeholder="julian@vance.com" required>
+          <div class="error-msg" id="signupEmailError">Please configure a valid active email map.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="signupPassword">Password</label>
+          <input type="password" id="signupPassword" placeholder="Minimum 8 characters" required>
+          <div class="error-msg" id="signupPasswordError">Security parameter requires min. 8 entries.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" placeholder="••••••••" required>
+          <div class="error-msg" id="confirmError">Password matching parameter failed.</div>
+        </div>
+
+        <button type="submit" class="btn-submit">Register Profile</button>
+      </form>
+    </section>
+
+  </main>
+
+  <script>
+  // SIGN-UP OPERATION WITH REDIRECT INTEGRATION
+  document.getElementById('signupForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      let valid = true;
+
+      const fields = [
+        { id:'firstName',      errId:'firstNameError',     check: v => v.trim().length > 0 },
+        { id:'lastName',       errId:'lastNameError',      check: v => v.trim().length > 0 },
+        { id:'phone',          errId:'phoneError',         check: v => v.trim().length > 0 },
+        { id:'signupEmail',    errId:'signupEmailError',   check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) },
+        { id:'signupPassword', errId:'signupPasswordError',check: v => v.length >= 8 },
+      ];
+
+      fields.forEach(({ id, errId, check }) => {
+        const input = document.getElementById(id);
+        const err = document.getElementById(errId);
+        if (!check(input.value)) {
+          input.style.borderColor = '#f87171'; err.style.display = 'block'; valid = false;
+        } else { input.style.borderColor = ''; err.style.display = 'none'; }
+      });
+
+      const pw = document.getElementById('signupPassword');
+      const cpw = document.getElementById('confirmPassword');
+      const cErr = document.getElementById('confirmError');
+      if (pw.value !== cpw.value || cpw.value === '') {
+        cpw.style.borderColor = '#f87171'; cErr.style.display = 'block'; valid = false;
+      } else { cpw.style.borderColor = ''; cErr.style.display = 'none'; }
+
+      if (!valid) return;
+
+      const firstName = document.getElementById('firstName').value;
+      const lastName = document.getElementById('lastName').value;
+      const phone = document.getElementById('phone').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = pw.value;
+
+      try {
+          const response = await fetch('http://localhost:5000/api/signup', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ firstName, lastName, phone, email, password })
+          });
+
+          const data = await response.json();
+          if (response.ok) {
+              alert(data.message + " Your ID is: " + data.customerId);
+              
+              // Cache active session identity parameters 
+              localStorage.setItem('cc_user', JSON.stringify({ id: data.customerId, firstName, lastName, email }));
+              
+              // Safe instant redirect to the storefront collection dashboard
+              window.location.href = 'shipping.html';
+          } else {
+              alert("Error: " + data.error);
+          }
+      } catch (err) {
+          console.error("Connection failed:", err);
+          alert("Could not connect to the backend server.");
+      }
+  });
+
+  // SIGN-IN OPERATION WITH REDIRECT INTEGRATION
+  document.getElementById('signinForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      let valid = true;
+      
+      const emailInput = document.getElementById('signinEmail');
+      const pwInput = document.getElementById('signinPassword');
+      const emailErr = document.getElementById('loginEmailError');
+      const pwErr = document.getElementById('loginPasswordError');
+      
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim())) {
+        emailInput.style.borderColor = '#f87171'; emailErr.style.display = 'block'; valid = false;
+      } else { emailInput.style.borderColor = ''; emailErr.style.display = 'none'; }
+      
+      if (pwInput.value.length < 6) {
+        pwInput.style.borderColor = '#f87171'; pwErr.style.display = 'block'; valid = false;
+      } else { pwInput.style.borderColor = ''; pwErr.style.display = 'none'; }
+      
+      if (!valid) return;
+
+      const email = emailInput.value;
+      const password = pwInput.value;
+
+      try {
+          const response = await fetch('http://localhost:5000/api/signin', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password })
+          });
+
+          const data = await response.json();
+          if (response.ok) {
+              alert("Welcome back, " + data.user.firstName + " " + data.user.lastName + "!");
+              
+              // Store logged-in status details
+              localStorage.setItem('cc_user', JSON.stringify(data.user));
+              
+              // Secure redirect to storefront browser view
+              window.location.href = 'shipping.html';
+          } else {
+              alert("Error: " + data.error);
+          }
+      } catch (err) {
+          console.error("Connection failed:", err);
+          alert("Could not connect to the backend server.");
+      }
+  });
+  </script>
+
+</body>
+</html>
