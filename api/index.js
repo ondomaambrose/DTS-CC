@@ -35,7 +35,7 @@ app.use((req, res, next) => {
 
 app.use(express.json()); 
 
-// 2. CONFIGURE A LIVE DATABASE CONNECTION POOL WITH SSL SUPPORT FOR CLOUD HOSTS
+// 2. CONFIGURE A LIVE DATABASE CONNECTION POOL WITH CLOUD SSL SUPPORT
 const pool = mysql.createPool({
     host:     process.env.DB_HOST     || '127.0.0.1',
     user:     process.env.DB_USER     || 'root',       
@@ -45,13 +45,12 @@ const pool = mysql.createPool({
     waitForConnections: true,
     connectionLimit: 5, 
     queueLimit: 0,
-    // CRITICAL: Many cloud providers (like Aiven or AWS) throw 500 errors unless SSL is explicitly enabled
     ssl: process.env.DB_HOST && process.env.DB_HOST !== '127.0.0.1' ? { rejectUnauthorized: false } : false
 });
 
 const db = pool.promise();
 
-// 3. SIGN-UP / REGISTRATION ROUTE
+// 3. SIGN-UP / REGISTRATION ROUTE (UPDATED TO LOWERCASE 'customer')
 app.post('/api/signup', async (req, res) => {
     const { firstName, lastName, phone, email, password } = req.body;
 
@@ -60,7 +59,8 @@ app.post('/api/signup', async (req, res) => {
     }
 
     try {
-        const [existing] = await db.query('SELECT * FROM CUSTOMER WHERE Email = ?', [email]);
+        // Updated table identifier to match your lowercase Clever Cloud setup
+        const [existing] = await db.query('SELECT * FROM customer WHERE Email = ?', [email]);
         if (existing.length > 0) {
             return res.status(400).json({ error: 'Email already registered' });
         }
@@ -68,8 +68,9 @@ app.post('/api/signup', async (req, res) => {
         const customerId = 'CUST' + Math.floor(100000 + Math.random() * 900000);
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Updated table identifier to match your lowercase Clever Cloud setup
         const insertQuery = `
-            INSERT INTO CUSTOMER (Customer_ID, First_Name, Last_Name, Phone, Email, Password) 
+            INSERT INTO customer (Customer_ID, First_Name, Last_Name, Phone, Email, Password) 
             VALUES (?, ?, ?, ?, ?, ?)
         `;
         
@@ -77,13 +78,12 @@ app.post('/api/signup', async (req, res) => {
         return res.status(201).json({ message: 'Account successfully created!', customerId });
 
     } catch (err) {
-        // Log the real detailed error to your Vercel logs console so you can read exactly what broke
         console.error("Signup Database Connection Crash Details:", err);
         return res.status(500).json({ error: 'Database connection failed.', details: err.message });
     }
 });
 
-// 4. SIGN-IN / AUTHENTICATION ROUTE
+// 4. SIGN-IN / AUTHENTICATION ROUTE (UPDATED TO LOWERCASE 'customer')
 app.post('/api/signin', async (req, res) => {
     const { email, password } = req.body;
 
@@ -92,7 +92,8 @@ app.post('/api/signin', async (req, res) => {
     }
 
     try {
-        const [users] = await db.query('SELECT * FROM CUSTOMER WHERE Email = ?', [email]);
+        // Updated table identifier to match your lowercase Clever Cloud setup
+        const [users] = await db.query('SELECT * FROM customer WHERE Email = ?', [email]);
         if (users.length === 0) {
             return res.status(401).json({ error: 'Invalid authentication credentials' });
         }
@@ -114,9 +115,10 @@ app.post('/api/signin', async (req, res) => {
     }
 });
 
-// 5. LIVE INVENTORY SYNC ROUTE WITH ROOT JSON FILE FALLBACK
+// 5. LIVE INVENTORY SYNC ROUTE WITH ROOT JSON FILE FALLBACK (UPDATED TO LOWERCASE 'product')
 app.get('/api/products', async (req, res) => {
     try {
+        // Confirmed lowercase 'product' table usage
         const [rows] = await db.query('SELECT * FROM product');
         
         if (rows && rows.length > 0) {
