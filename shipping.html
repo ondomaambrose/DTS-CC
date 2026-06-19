@@ -504,18 +504,48 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // --- CORE DATA STREAM PIPELINES ---
 async function fetchLiveProducts() {
+  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:5000'
+      : ''; // Relative routing toggle for active production environments
+
   try {
-    const response = await fetch('http://localhost:5000/api/products');
+    // Attempt 1: Sync inventory directly via our Vercel Serverless Function architecture
+    const response = await fetch(`${API_BASE}/api/products`);
     if (!response.ok) {
-      throw new Error("Database offline");
+      throw new Error("Database connectivity or endpoint timeout condition encountered.");
     }
     products = await response.json();
-    
-    // Process current filtering setup and display initial items
     processCatalogUpdate();
+    
   } catch (error) {
-    console.error("Inventory sync error:", error);
-    showToast("Error connecting to inventory database.");
+    console.warn("Express context uncontactable. Engaging static client backup protocol...", error.message);
+    
+    // Attempt 2: Emergency client-side browser fallback directly to root products.json file mapping
+    try {
+      const fallbackResponse = await fetch('./products.json');
+      if (!fallbackResponse.ok) {
+        throw new Error("Root static products backup descriptor missing or unreadable.");
+      }
+      const fallbackData = await fallbackResponse.json();
+      
+      // Map static attributes safely to normalize incoming frontend structure keys
+      products = fallbackData.map(p => ({
+        id: p.Product_ID || p.id,
+        name: p.Name || p.name,
+        category: (p.Category || p.category || 'Women').toLowerCase(),
+        detail: p.Detail || p.detail || p.Description,
+        price: p.Price || p.price,
+        img: p.Img_Url || p.Img_URL || p.img_url || p.Img_url || "",
+        badge: p.Badge || p.badge || null
+      }));
+      
+      showToast("Viewing archive collection (offline mode).");
+      processCatalogUpdate();
+      
+    } catch (fallbackError) {
+      console.error("Critical Failure: UI mapping data channels fully broken.", fallbackError);
+      showToast("Error connecting to inventory database.");
+    }
   }
 }
 

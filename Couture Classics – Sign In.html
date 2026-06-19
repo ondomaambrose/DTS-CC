@@ -269,6 +269,11 @@
   </main>
 
   <script>
+  // DYNAMIC ENVIRONMENT RESOLUTION CONFIGURATION
+  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:5000'
+      : ''; // Resolves dynamically to the current root origin when on Vercel
+
   // SIGN-UP OPERATION WITH REDIRECT INTEGRATION
   document.getElementById('signupForm').addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -306,7 +311,7 @@
       const password = pw.value;
 
       try {
-          const response = await fetch('http://localhost:5000/api/signup', {
+          const response = await fetch(`${API_BASE}/api/signup`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ firstName, lastName, phone, email, password })
@@ -354,7 +359,7 @@
       const password = pwInput.value;
 
       try {
-          const response = await fetch('http://localhost:5000/api/signin', {
+          const response = await fetch(`${API_BASE}/api/signin`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ email, password })
