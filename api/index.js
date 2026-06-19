@@ -1,11 +1,11 @@
 // api/index.js
 const express = require('express');
 const mysql = require('mysql2');
-const cors = require('cors'); // Retained if needed elsewhere in your stack
+const cors = require('cors'); 
 const bcrypt = require('bcryptjs');
-const serverless = require('serverless-http'); // Wraps Express for Serverless
-const fs = require('fs').promises;             // Required for reading the root fallback JSON file
-const path = require('path');                  // Required for building precise directory pathways
+const serverless = require('serverless-http'); 
+const fs = require('fs').promises;             
+const path = require('path');                  
 
 const app = express();
 
@@ -19,21 +19,14 @@ const allowedOrigins = [
 
 app.use((req, res, next) => {
     const origin = req.headers.origin;
-    
-    // Echo back the active matching origin to satisfy secure CORS policies
     if (allowedOrigins.includes(origin)) {
         res.setHeader("Access-Control-Allow-Origin", origin);
     }
-    
-    // Core authorization headers configuration
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Private-Network");
-    
-    // CRITICAL: Permits public Vercel links to cleanly request resources from your local network boundary
     res.setHeader("Access-Control-Allow-Private-Network", "true");
 
-    // Intercept and resolve preflight OPTIONS queries instantly before routing engine engagement
     if (req.method === 'OPTIONS') {
         return res.sendStatus(200);
     }
@@ -42,7 +35,7 @@ app.use((req, res, next) => {
 
 app.use(express.json()); 
 
-// 2. CONFIGURE A LIVE DATABASE CONNECTION POOL FOR SERVERLESS
+// 2. CONFIGURE A LIVE DATABASE CONNECTION POOL WITH SSL SUPPORT FOR CLOUD HOSTS
 const pool = mysql.createPool({
     host:     process.env.DB_HOST     || '127.0.0.1',
     user:     process.env.DB_USER     || 'root',       
@@ -50,11 +43,12 @@ const pool = mysql.createPool({
     database: process.env.DB_NAME     || 'CoutureClassics',
     port:     process.env.DB_PORT     || 3306,
     waitForConnections: true,
-    connectionLimit: 5, // Kept light to prevent crashing free cloud database limits
-    queueLimit: 0
+    connectionLimit: 5, 
+    queueLimit: 0,
+    // CRITICAL: Many cloud providers (like Aiven or AWS) throw 500 errors unless SSL is explicitly enabled
+    ssl: process.env.DB_HOST && process.env.DB_HOST !== '127.0.0.1' ? { rejectUnauthorized: false } : false
 });
 
-// Use native promises directly from the pool object
 const db = pool.promise();
 
 // 3. SIGN-UP / REGISTRATION ROUTE
@@ -80,10 +74,12 @@ app.post('/api/signup', async (req, res) => {
         `;
         
         await db.query(insertQuery, [customerId, firstName, lastName, phone, email, hashedPassword]);
-        res.status(201).json({ message: 'Account successfully created!', customerId });
+        return res.status(201).json({ message: 'Account successfully created!', customerId });
+
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Internal server registration error' });
+        // Log the real detailed error to your Vercel logs console so you can read exactly what broke
+        console.error("Signup Database Connection Crash Details:", err);
+        return res.status(500).json({ error: 'Database connection failed.', details: err.message });
     }
 });
 
@@ -107,24 +103,20 @@ app.post('/api/signin', async (req, res) => {
             return res.status(401).json({ error: 'Invalid authentication credentials' });
         }
 
-        res.status(200).json({ 
+        return res.status(200).json({ 
             message: 'Sign in successful!', 
-            user: { 
-                id: user.Customer_ID, 
-                firstName: user.First_Name, 
-                lastName: user.Last_Name 
-            } 
+            user: { id: user.Customer_ID, firstName: user.First_Name, lastName: user.Last_Name } 
         });
+
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Internal server authentication error' });
+        console.error("Signin Database Connection Crash Details:", err);
+        return res.status(500).json({ error: 'Database connection failed.', details: err.message });
     }
 });
 
 // 5. LIVE INVENTORY SYNC ROUTE WITH ROOT JSON FILE FALLBACK
 app.get('/api/products', async (req, res) => {
     try {
-        // Primary Attempt: Try fetching directly from the live database
         const [rows] = await db.query('SELECT * FROM product');
         
         if (rows && rows.length > 0) {
@@ -140,20 +132,16 @@ app.get('/api/products', async (req, res) => {
             
             return res.status(200).json(formattedProducts);
         }
-        
-        // Throw to fallback loop if query finishes but database returns 0 rows
         throw new Error("No live database entries found. Shifting to static file.");
 
     } catch (err) {
         console.warn("Database unavailable. Engaging root directory fallback JSON protocol:", err.message);
         
         try {
-            // Secondary Attempt: Target and read products.json from the parent root folder
             const jsonPath = path.join(__dirname, '..', 'products.json');
             const fileData = await fs.readFile(jsonPath, 'utf8');
             const fallbackProducts = JSON.parse(fileData);
 
-            // Format data keys dynamically to guarantee matching API payloads
             const formattedFallback = fallbackProducts.map(p => ({
                 id: p.Product_ID || p.id,
                 name: p.Name || p.name,
@@ -173,6 +161,5 @@ app.get('/api/products', async (req, res) => {
     }
 });
 
-// 6. EXPORT FOR VERCEL SERVERLESS ENVIRONMENT
 module.exports = app;
 module.exports.handler = serverless(app);
